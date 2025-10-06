@@ -17,10 +17,12 @@ tradeos.app/
 .DS_Store
 Thumbs.db
 
-# 🖥 Scripts
-*.sh
-*.ps1
-*.bat
+# 🖥 Compiled TypeScript (keep .ts sources, ignore compiled .js)
+create-widget-relay.js
+mergeTradeOSBranches.js
+scripts/auraMap.js
+scripts/config/
+scripts/frontend/
 
 # ⚠ npm debug logs
 npm-debug.log*

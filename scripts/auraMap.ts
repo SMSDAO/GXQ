@@ -168,7 +168,8 @@ export const defaultAuraMap: AuraMap = {
 };
 `;
 
-  const utilsDir = path.join(__dirname, 'frontend', 'utils');
+  const rootDir = path.resolve(__dirname, '..');
+  const utilsDir = path.join(rootDir, 'frontend', 'utils');
   if (!fs.existsSync(utilsDir)) {
     fs.mkdirSync(utilsDir, { recursive: true });
   }
@@ -199,7 +200,8 @@ function generateAuraConfig(): void {
     },
   };
 
-  const configPath = path.join(__dirname, 'config', 'aura.json');
+  const rootDir = path.resolve(__dirname, '..');
+  const configPath = path.join(rootDir, 'config', 'aura.json');
   const configDir = path.dirname(configPath);
   
   if (!fs.existsSync(configDir)) {

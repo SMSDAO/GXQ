@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS React Component
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 ﻿import React, { useEffect, useState } from 'react';
 
 export default function JackpotBadgeExplorer() {
