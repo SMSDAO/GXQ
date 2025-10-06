@@ -1,6 +1,23 @@
 // File: tests/unit/mxm.test.js
 // 🧪 Unit Tests for MXM (Model eXecution Manager)
 
+// Mock mongoose before requiring MXM
+jest.mock('mongoose', () => {
+  const SchemaClass = class {
+    constructor() {}
+  };
+  SchemaClass.Types = { Mixed: {} };
+  
+  return {
+    Schema: SchemaClass,
+    model: jest.fn(() => ({
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn()
+    }))
+  };
+});
+
 const { MXM } = require('../../backend/models/MXM');
 
 describe('MXM - Model eXecution Manager', () => {

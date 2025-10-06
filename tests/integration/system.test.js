@@ -1,6 +1,23 @@
 // File: tests/integration/system.test.js
 // 🧪 Integration Tests for Complete System
 
+// Mock mongoose for integration tests
+jest.mock('mongoose', () => {
+  const SchemaClass = class {
+    constructor() {}
+  };
+  SchemaClass.Types = { Mixed: {} };
+  
+  return {
+    Schema: SchemaClass,
+    model: jest.fn(() => ({
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn()
+    }))
+  };
+});
+
 describe('TradeOS System Integration Tests', () => {
   test('MXM and MQM integration', () => {
     const { mxmInstance } = require('../../backend/models/MXM');
