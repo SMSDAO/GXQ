@@ -17,10 +17,15 @@ tradeos.app/
 .DS_Store
 Thumbs.db
 
-# 🖥 Scripts
+# 🖥 Scripts (exclude deployment scripts from ignore)
 *.sh
+!deploy-runner.sh
+!init-core.sh
 *.ps1
+!deploy-runner.ps1
+!init-core.ps1
 *.bat
+!TradeOS-orchestrator.bat
 
 # ⚠ npm debug logs
 npm-debug.log*
@@ -29,8 +34,11 @@ yarn-error.log*
 
 # 🧪 Test snapshots and coverage
 coverage/
+# Allow test files in tests/ directory
 *.test.js
+!tests/**/*.test.js
 *.spec.js
+!tests/**/*.spec.js
 
 # 🛠 Custom editor configs
 .vscode/
