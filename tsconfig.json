@@ -1,4 +1,11 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "ES2020"
+    }
+  },
   "compilerOptions": {
     "lib": [
       "dom",

@@ -13,6 +13,12 @@ app.use('/api/sniper', require('./api/sniper'));
 app.use('/api/deployToken', require('./api/deployToken'));
 app.use('/api/governance', require('./api/governance'));
 app.use('/api/lpScore', require('./api/lpScore'));
+app.use('/api/mxm', require('./api/mxm'));
+app.use('/api/mqm', require('./api/mqm'));
+app.use('/api/airdrop', require('./api/airdropSpin'));
+app.use('/api/launchpad', require('./api/launchpad'));
+app.use('/api/affiliate', require('./api/affiliate'));
+app.use('/api/gm', require('./api/gm'));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
