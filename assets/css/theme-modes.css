@@ -1,0 +1,270 @@
+// Global CSS Variables for Dark/Light Mode and Neon Effects
+// File: assets/css/theme-modes.css
+
+:root {
+  /* Light Mode Colors */
+  --bg-primary-light: #ffffff;
+  --bg-secondary-light: #f5f5f5;
+  --bg-card-light: #ffffff;
+  --text-primary-light: #1a1a1a;
+  --text-secondary-light: #666666;
+  
+  /* Dark Mode Colors */
+  --bg-primary-dark: #0a0a0a;
+  --bg-secondary-dark: #1a1a1a;
+  --bg-card-dark: #151515;
+  --text-primary-dark: #ffffff;
+  --text-secondary-dark: #b3b3b3;
+  
+  /* Neon Glow Colors - Solana Style */
+  --neon-blue: #00d4ff;
+  --neon-purple: #9945ff;
+  --neon-green: #14f195;
+  --neon-pink: #ff00ff;
+  --neon-cyan: #00ffff;
+  
+  /* Active Theme (default light) */
+  --bg-primary: var(--bg-primary-light);
+  --bg-secondary: var(--bg-secondary-light);
+  --bg-card: var(--bg-card-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  
+  /* Aura Glow */
+  --aura-color: var(--neon-blue);
+  --aura-intensity: 0.8;
+  --glow-spread: 20px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: var(--bg-primary-dark);
+  --bg-secondary: var(--bg-secondary-dark);
+  --bg-card: var(--bg-card-dark);
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+}
+
+/* Body Styles */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Neon Glow Effects */
+.neon-glow-blue {
+  box-shadow: 
+    0 0 10px rgba(0, 212, 255, 0.5),
+    0 0 20px rgba(0, 212, 255, 0.3),
+    0 0 30px rgba(0, 212, 255, 0.2),
+    inset 0 0 10px rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  animation: neon-pulse-blue 2s ease-in-out infinite;
+}
+
+.neon-glow-purple {
+  box-shadow: 
+    0 0 10px rgba(153, 69, 255, 0.5),
+    0 0 20px rgba(153, 69, 255, 0.3),
+    0 0 30px rgba(153, 69, 255, 0.2),
+    inset 0 0 10px rgba(153, 69, 255, 0.1);
+  border: 1px solid rgba(153, 69, 255, 0.3);
+  animation: neon-pulse-purple 2s ease-in-out infinite;
+}
+
+.neon-glow-green {
+  box-shadow: 
+    0 0 10px rgba(20, 241, 149, 0.5),
+    0 0 20px rgba(20, 241, 149, 0.3),
+    0 0 30px rgba(20, 241, 149, 0.2),
+    inset 0 0 10px rgba(20, 241, 149, 0.1);
+  border: 1px solid rgba(20, 241, 149, 0.3);
+  animation: neon-pulse-green 2s ease-in-out infinite;
+}
+
+/* 3D Card Effect - Solana Style */
+.card-3d {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-5px) rotateX(5deg);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 20px var(--aura-color);
+}
+
+.card-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.1) 0%,
+    rgba(153, 69, 255, 0.1) 50%,
+    rgba(20, 241, 149, 0.1) 100%
+  );
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card-3d:hover::before {
+  opacity: 1;
+}
+
+/* Neon Pulse Animations */
+@keyframes neon-pulse-blue {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(0, 212, 255, 0.5),
+      0 0 20px rgba(0, 212, 255, 0.3),
+      0 0 30px rgba(0, 212, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 15px rgba(0, 212, 255, 0.7),
+      0 0 30px rgba(0, 212, 255, 0.5),
+      0 0 45px rgba(0, 212, 255, 0.3);
+  }
+}
+
+@keyframes neon-pulse-purple {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(153, 69, 255, 0.5),
+      0 0 20px rgba(153, 69, 255, 0.3),
+      0 0 30px rgba(153, 69, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 15px rgba(153, 69, 255, 0.7),
+      0 0 30px rgba(153, 69, 255, 0.5),
+      0 0 45px rgba(153, 69, 255, 0.3);
+  }
+}
+
+@keyframes neon-pulse-green {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(20, 241, 149, 0.5),
+      0 0 20px rgba(20, 241, 149, 0.3),
+      0 0 30px rgba(20, 241, 149, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 15px rgba(20, 241, 149, 0.7),
+      0 0 30px rgba(20, 241, 149, 0.5),
+      0 0 45px rgba(20, 241, 149, 0.3);
+  }
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+}
+
+/* Glassmorphism Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Button Styles with Neon */
+.btn-neon {
+  background: transparent;
+  border: 2px solid var(--aura-color);
+  color: var(--aura-color);
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--aura-color);
+  opacity: 0.3;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-neon:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-neon:hover {
+  box-shadow: 
+    0 0 20px var(--aura-color),
+    inset 0 0 20px var(--aura-color);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-3d {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .btn-neon {
+    padding: 10px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-3d {
+    padding: 12px;
+    border-radius: 12px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-green));
+}
