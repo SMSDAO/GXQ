@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS React Component
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 ﻿import React from 'react';
 import Link from 'next/link';
 import './Home.css'; // optional styling

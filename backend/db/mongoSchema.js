@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS JavaScript Module
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 const mongoose = require('mongoose');
 
 const badgeSchema = new mongoose.Schema({
