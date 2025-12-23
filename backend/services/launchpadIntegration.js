@@ -100,10 +100,7 @@ class LaunchpadIntegration {
    */
   async getNewLaunches() {
     try {
-      const [jupiterTokens, raydiumPools] = await Promise.all([
-        this.getJupiterTokenList(),
-        this.getRaydiumPools()
-      ]);
+      const raydiumPools = await this.getRaydiumPools();
       
       // Filter for recent launches (last 24h)
       const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
@@ -210,8 +207,6 @@ class LaunchpadIntegration {
     const {
       targetLiquidity = 50000,
       maxBuyAmount = 1000,
-      stopLossPercent = 10,
-      takeProfitPercent = 50,
       dynamicSlippage = true
     } = config;
     

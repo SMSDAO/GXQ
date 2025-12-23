@@ -3,7 +3,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { mqmInstance, QueueConfig, QueueStats } = require('../models/MQM');
+const { mqmInstance } = require('../models/MQM');
 
 // Enqueue a job
 router.post('/enqueue', async (req, res) => {

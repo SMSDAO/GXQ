@@ -96,7 +96,7 @@ router.get('/stats/:wallet', async (req, res) => {
 // Track referral action
 router.post('/track', async (req, res) => {
   try {
-    const { referralCode, action, amount, wallet } = req.body;
+    const { referralCode, amount, wallet } = req.body;
     
     if (!referralCode) {
       return res.status(400).json({ success: false, message: 'Referral code required' });
