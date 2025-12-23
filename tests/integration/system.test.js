@@ -28,12 +28,6 @@ describe('TradeOS System Integration Tests', () => {
   });
 
   test('Widget generation system', () => {
-    const fs = require('fs');
-    const path = require('path');
-    
-    // Check if auraMap utility exists after generation
-    const auraMapPath = path.join(__dirname, '../../frontend/utils/auraMap.ts');
-    
     // This test will pass even if file doesn't exist yet (pre-generation)
     expect(true).toBe(true);
   });

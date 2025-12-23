@@ -1,7 +1,6 @@
 // File: backend/api/airdropSpin.js
 const express = require('express');
 const router = express.Router();
-const { ethers } = require('ethers');
 
 // Airdrop Spin Game API endpoints
 
@@ -31,7 +30,6 @@ router.get('/campaigns', async (req, res) => {
 // Get user data for specific campaign
 router.get('/user-data/:campaignId', async (req, res) => {
   try {
-    const { campaignId } = req.params;
     const userAddress = req.query.address || req.headers['x-wallet-address'];
     
     if (!userAddress) {
@@ -57,7 +55,6 @@ router.get('/user-data/:campaignId', async (req, res) => {
 // Execute spin
 router.post('/spin', async (req, res) => {
   try {
-    const { campaignId } = req.body;
     const userAddress = req.body.address || req.headers['x-wallet-address'];
     
     if (!userAddress) {
@@ -81,7 +78,6 @@ router.post('/spin', async (req, res) => {
 // Create new campaign (launcher only)
 router.post('/create-campaign', async (req, res) => {
   try {
-    const { token, amount, minReward, maxReward } = req.body;
     const launcherAddress = req.body.address || req.headers['x-wallet-address'];
     
     if (!launcherAddress) {

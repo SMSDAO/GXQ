@@ -10,11 +10,14 @@ jest.mock('mongoose', () => {
   
   return {
     Schema: SchemaClass,
-    model: jest.fn(() => ({
-      find: jest.fn(),
-      findOne: jest.fn(),
-      save: jest.fn()
-    }))
+    model: jest.fn((modelName) => {
+      // Create isolated mock instances for each model
+      return {
+        find: jest.fn().mockName(`${modelName}.find`),
+        findOne: jest.fn().mockName(`${modelName}.findOne`),
+        save: jest.fn().mockName(`${modelName}.save`)
+      };
+    })
   };
 });
 

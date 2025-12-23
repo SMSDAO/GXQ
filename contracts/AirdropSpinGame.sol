@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -89,23 +89,13 @@ contract AirdropSpinGame is ReentrancyGuard {
     }
     
     /**
-     * @dev Calculate wait time based on strikes
+     * @dev Calculate wait time for a user.
+     * Currently, this always returns the base wait time.
+     * @param /* user */ User address (unused in current implementation)
      */
-    function getWaitTime(address user) public view returns (uint256) {
-        uint256 totalStrikes = 0;
-        // Sum strikes from all campaigns
-        // This is simplified - in production, track globally
-        
-        if (totalStrikes == 0) return BASE_WAIT_TIME;
-        if (totalStrikes < STRIKE_BONUS_DAYS) return BASE_WAIT_TIME;
-        
-        // After 3 days of strikes, reduce wait time
-        uint256 reduction = (totalStrikes - STRIKE_BONUS_DAYS + 1) * 1 hours;
-        if (reduction >= BASE_WAIT_TIME - 2 hours) {
-            return 2 hours; // Minimum 2 hours wait
-        }
-        
-        return BASE_WAIT_TIME - reduction;
+    function getWaitTime(address /* user */) public pure returns (uint256) {
+        // Strike-based reductions are not yet implemented; always use base wait time.
+        return BASE_WAIT_TIME;
     }
     
     /**
@@ -163,6 +153,10 @@ contract AirdropSpinGame is ReentrancyGuard {
     
     /**
      * @dev Pseudo-random reward calculation
+     * @notice SECURITY WARNING: This uses block.timestamp and block.prevrandao for randomness,
+     * which can be influenced by miners/validators. For production use, consider implementing
+     * a verifiable randomness solution (e.g., Chainlink VRF or commit-reveal pattern) to
+     * prevent manipulation of rewards and ensure fair distribution of airdrop funds.
      */
     function _calculateReward(
         uint256 min,
