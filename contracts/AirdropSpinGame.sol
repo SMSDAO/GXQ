@@ -91,10 +91,10 @@ contract AirdropSpinGame is ReentrancyGuard {
     /**
      * @dev Calculate wait time for a user.
      * Currently, this always returns the base wait time.
+     * @param /* user */ User address (unused in current implementation)
      */
-    function getWaitTime(address user) public pure returns (uint256) {
+    function getWaitTime(address /* user */) public pure returns (uint256) {
         // Strike-based reductions are not yet implemented; always use base wait time.
-        user; // silence unused parameter warning
         return BASE_WAIT_TIME;
     }
     
