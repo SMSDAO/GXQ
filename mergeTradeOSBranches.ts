@@ -1,5 +1,9 @@
-// File: mergeTradeOSBranches.ts
-// 🔁 TradeOS Branch Merge Orchestrator
+/**
+ * ============================================================================
+ * TradeOS Branch Merge Automation
+ * Auto-merges development branches into main
+ * ============================================================================
+ */
 
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -11,128 +15,115 @@ interface BranchConfig {
   autoMerge: boolean;
 }
 
-const BRANCHES: BranchConfig[] = [
-  { name: 'main', priority: 1, autoMerge: false },
-  { name: 'dev', priority: 2, autoMerge: true },
-  { name: 'feature/ui-updates', priority: 3, autoMerge: true },
-  { name: 'feature/backend-api', priority: 4, autoMerge: true },
-  { name: 'feature/contracts', priority: 5, autoMerge: true },
+// Configuration for branches to merge
+const branches: BranchConfig[] = [
+  { name: 'develop', priority: 1, autoMerge: false },
+  { name: 'feature/widgets', priority: 2, autoMerge: false },
+  { name: 'feature/contracts', priority: 3, autoMerge: false },
+  { name: 'hotfix/*', priority: 0, autoMerge: false },
 ];
 
-function executeCommand(command: string): string {
+/**
+ * Execute git command safely
+ */
+function execGit(command: string): string {
   try {
-    return execSync(command, { encoding: 'utf-8', stdio: 'pipe' });
+    return execSync(command, { encoding: 'utf8', stdio: 'pipe' }).trim();
   } catch (error: any) {
-    console.error(`❌ Command failed: ${command}`);
-    console.error(error.message);
+    console.error(`❌ Git command failed: ${command}`);
+    console.error(error.stderr || error.message);
     return '';
   }
 }
 
-function getCurrentBranch(): string {
-  const result = executeCommand('git rev-parse --abbrev-ref HEAD');
-  return result.trim();
-}
-
+/**
+ * Check if branch exists
+ */
 function branchExists(branchName: string): boolean {
-  const result = executeCommand('git branch --list');
-  return result.includes(branchName);
+  const branches = execGit('git branch -a');
+  return branches.includes(branchName);
 }
 
-function mergeBranch(sourceBranch: string, targetBranch: string): boolean {
-  console.log(`\n🔄 Merging ${sourceBranch} into ${targetBranch}...`);
-  
-  // Checkout target branch
-  executeCommand(`git checkout ${targetBranch}`);
-  
-  // Try to merge
-  const mergeOutput = executeCommand(`git merge ${sourceBranch} --no-edit`);
-  
-  if (mergeOutput.includes('CONFLICT') || mergeOutput.includes('conflict')) {
-    console.log(`⚠️  Merge conflict detected for ${sourceBranch}`);
-    console.log(`   Please resolve manually and continue`);
-    return false;
-  }
-  
-  console.log(`✅ Successfully merged ${sourceBranch} into ${targetBranch}`);
-  return true;
+/**
+ * Get current branch
+ */
+function getCurrentBranch(): string {
+  return execGit('git branch --show-current');
 }
 
-function main() {
-  console.log('🚀 TradeOS Branch Merge Orchestrator\n');
-  
-  // Get current branch
+/**
+ * Main merge orchestration
+ */
+async function mergeBranches(): Promise<void> {
+  console.log('🔁 TradeOS Branch Merge Automation');
+  console.log('==================================\n');
+
   const currentBranch = getCurrentBranch();
   console.log(`📍 Current branch: ${currentBranch}\n`);
-  
-  // Check if we're in a git repository
-  const isGitRepo = fs.existsSync(path.join(process.cwd(), '.git'));
-  if (!isGitRepo) {
-    console.log('❌ Not a git repository. Skipping merge...');
-    return;
-  }
-  
+
   // Fetch latest changes
   console.log('📥 Fetching latest changes...');
-  executeCommand('git fetch --all');
-  
-  // Check for local changes
-  const status = executeCommand('git status --porcelain');
-  if (status.trim()) {
-    console.log('⚠️  Uncommitted changes detected:');
-    console.log(status);
-    console.log('   Stashing changes...');
-    executeCommand('git stash');
+  execGit('git fetch origin');
+
+  // Check for uncommitted changes
+  const status = execGit('git status --porcelain');
+  if (status) {
+    console.log('⚠️  Warning: You have uncommitted changes');
+    console.log('Please commit or stash them before merging\n');
+    return;
   }
-  
+
   // Sort branches by priority
-  const sortedBranches = BRANCHES.sort((a, b) => a.priority - b.priority);
-  
-  // Process merges
-  let mergeCount = 0;
-  for (let i = 0; i < sortedBranches.length - 1; i++) {
-    const targetBranch = sortedBranches[i];
+  const sortedBranches = branches.sort((a, b) => a.priority - b.priority);
+
+  for (const branchConfig of sortedBranches) {
+    const branchName = branchConfig.name;
     
-    if (!targetBranch.autoMerge) {
-      console.log(`⏭️  Skipping ${targetBranch.name} (auto-merge disabled)`);
+    // Skip wildcard branches for now (can be enhanced)
+    if (branchName.includes('*')) {
+      console.log(`⏭️  Skipping wildcard pattern: ${branchName}`);
       continue;
     }
+
+    console.log(`\n🔍 Checking branch: ${branchName}`);
     
-    // Check if branch exists
-    if (!branchExists(targetBranch.name)) {
-      console.log(`⚠️  Branch ${targetBranch.name} does not exist locally`);
+    if (!branchExists(branchName)) {
+      console.log(`  ⚠️  Branch not found, skipping...`);
       continue;
     }
+
+    // Check if branch has changes
+    const diff = execGit(`git log main..origin/${branchName} --oneline`);
     
-    // Find branches to merge into this one
-    for (let j = i + 1; j < sortedBranches.length; j++) {
-      const sourceBranch = sortedBranches[j];
+    if (!diff) {
+      console.log(`  ✅ No new changes in ${branchName}`);
+      continue;
+    }
+
+    console.log(`  📊 Found ${diff.split('\n').length} commit(s) to merge`);
+    
+    if (branchConfig.autoMerge) {
+      console.log(`  🔄 Auto-merging ${branchName}...`);
+      const mergeResult = execGit(`git merge origin/${branchName} --no-ff -m "Auto-merge ${branchName} into main"`);
       
-      if (branchExists(sourceBranch.name)) {
-        if (mergeBranch(sourceBranch.name, targetBranch.name)) {
-          mergeCount++;
-        }
+      if (mergeResult.includes('CONFLICT')) {
+        console.log(`  ❌ Merge conflict detected in ${branchName}`);
+        console.log(`  🔧 Please resolve conflicts manually`);
+        execGit('git merge --abort');
+      } else {
+        console.log(`  ✅ Successfully merged ${branchName}`);
       }
+    } else {
+      console.log(`  ℹ️  Manual merge required for ${branchName}`);
     }
   }
-  
-  // Return to original branch
-  executeCommand(`git checkout ${currentBranch}`);
-  
-  // Pop stash if we stashed earlier
-  if (status.trim()) {
-    console.log('\n🔄 Restoring stashed changes...');
-    executeCommand('git stash pop');
-  }
-  
-  console.log(`\n✅ Merge orchestration complete!`);
-  console.log(`   Merged ${mergeCount} branch(es)`);
-  console.log(`   Returned to: ${currentBranch}`);
+
+  console.log('\n✨ Branch merge check complete!');
+  console.log('==================================\n');
 }
 
-// Execute if run directly
-if (require.main === module) {
-  main();
-}
-
-export { main as mergeTradeOSBranches };
+// Run the script
+mergeBranches().catch((error) => {
+  console.error('❌ Error during merge process:', error);
+  process.exit(1);
+});

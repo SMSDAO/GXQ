@@ -1,119 +1,95 @@
-# 🔎 TradeOS Core Verification Script
-# Ensures all required folders, subfolders, and dependencies exist
+# ============================================================================
+# TradeOS Core Initialization Script
+# Auto-generated configuration for full stack deployment
+# ============================================================================
 
-Write-Host "🚀 Initializing TradeOS Core..." -ForegroundColor Cyan
-
-# Define required folder structure
-$requiredFolders = @(
-    "backend",
-    "backend/api",
-    "backend/db",
-    "backend/models",
-    "backend/services",
-    "backend/utils",
-    "frontend",
-    "frontend/components",
-    "frontend/components/botWidgets",
-    "frontend/components/services",
-    "frontend/pages",
-    "frontend/utils",
-    "contracts",
-    "contracts/interfaces",
-    "contracts/programs",
-    "scripts",
-    "tests",
-    "tests/unit",
-    "tests/integration",
-    "tests/e2e",
-    "docs",
-    "assets",
-    "assets/css",
-    "assets/js",
-    "assets/images",
-    "config",
-    "logs",
-    "temp"
-)
-
-# Create missing folders
-Write-Host "`n📁 Checking folder structure..." -ForegroundColor Yellow
-$created = 0
-foreach ($folder in $requiredFolders) {
-    $path = Join-Path $PSScriptRoot $folder
-    if (-not (Test-Path $path)) {
-        New-Item -ItemType Directory -Path $path -Force | Out-Null
-        Write-Host "  ✅ Created: $folder" -ForegroundColor Green
-        $created++
-    }
-}
-if ($created -eq 0) {
-    Write-Host "  ✅ All folders exist" -ForegroundColor Green
-} else {
-    Write-Host "  ✅ Created $created missing folders" -ForegroundColor Green
-}
-
-# Check for required files
-Write-Host "`n📄 Checking required files..." -ForegroundColor Yellow
-$requiredFiles = @(
-    @{Path="package.json"; Template='{"name":"tradeos-app","version":"1.0.0"}'},
-    @{Path="tsconfig.json"; Template='{"compilerOptions":{"target":"ES2020","module":"commonjs"}}'},
-    @{Path=".env.example"; Template='MONGO_URI=mongodb://localhost:27017/tradeos\nPORT=3001'},
-    @{Path="backend/db/connection.js"; Template='// Database connection placeholder'},
-    @{Path="frontend/utils/auraMap.ts"; Template='// Aura mapping utility placeholder'},
-    @{Path="tests/README.md"; Template='# TradeOS Test Suite'}
-)
-
-foreach ($file in $requiredFiles) {
-    $path = Join-Path $PSScriptRoot $file.Path
-    if (-not (Test-Path $path)) {
-        $dir = Split-Path $path -Parent
-        if (-not (Test-Path $dir)) {
-            New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        }
-        Set-Content -Path $path -Value $file.Template
-        Write-Host "  ✅ Created: $($file.Path)" -ForegroundColor Green
-    }
-}
+Write-Host "🚀 TradeOS Core Initialization" -ForegroundColor Cyan
+Write-Host "================================" -ForegroundColor Cyan
 
 # Check Node.js installation
-Write-Host "`n🔧 Checking dependencies..." -ForegroundColor Yellow
-try {
-    $nodeVersion = node --version 2>$null
-    if ($nodeVersion) {
-        Write-Host "  ✅ Node.js: $nodeVersion" -ForegroundColor Green
-    } else {
-        Write-Host "  ❌ Node.js not found. Please install Node.js 18+" -ForegroundColor Red
-    }
-} catch {
-    Write-Host "  ❌ Node.js not found. Please install Node.js 18+" -ForegroundColor Red
-}
-
-try {
-    $npmVersion = npm --version 2>$null
-    if ($npmVersion) {
-        Write-Host "  ✅ npm: v$npmVersion" -ForegroundColor Green
-    }
-} catch {
-    Write-Host "  ⚠️  npm not found" -ForegroundColor Yellow
-}
-
-# Check for node_modules
-$nodeModulesPath = Join-Path $PSScriptRoot "node_modules"
-if (-not (Test-Path $nodeModulesPath)) {
-    Write-Host "  ⚠️  node_modules not found. Run 'npm install'" -ForegroundColor Yellow
+Write-Host "`n📦 Checking Node.js..." -ForegroundColor Yellow
+if (Get-Command node -ErrorAction SilentlyContinue) {
+    $nodeVersion = node --version
+    Write-Host "✅ Node.js installed: $nodeVersion" -ForegroundColor Green
 } else {
-    Write-Host "  ✅ node_modules exists" -ForegroundColor Green
+    Write-Host "❌ Node.js not found. Please install Node.js 18+" -ForegroundColor Red
+    exit 1
 }
 
-# Verify Git installation
-try {
-    $gitVersion = git --version 2>$null
-    if ($gitVersion) {
-        Write-Host "  ✅ Git: $gitVersion" -ForegroundColor Green
+# Check npm installation
+Write-Host "`n📦 Checking npm..." -ForegroundColor Yellow
+if (Get-Command npm -ErrorAction SilentlyContinue) {
+    $npmVersion = npm --version
+    Write-Host "✅ npm installed: $npmVersion" -ForegroundColor Green
+} else {
+    Write-Host "❌ npm not found" -ForegroundColor Red
+    exit 1
+}
+
+# Install dependencies
+Write-Host "`n📥 Installing dependencies..." -ForegroundColor Yellow
+npm install --silent
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✅ Dependencies installed" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  Warning: Some dependencies may have issues" -ForegroundColor Yellow
+}
+
+# Check for .env file
+Write-Host "`n🔐 Checking environment configuration..." -ForegroundColor Yellow
+if (Test-Path ".env") {
+    Write-Host "✅ .env file found" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  .env file not found, creating from template..." -ForegroundColor Yellow
+    @"
+# TradeOS Environment Configuration
+# Auto-generated by init-core.ps1
+
+# MongoDB
+MONGO_URI=mongodb://localhost:27017/tradeos
+
+# Server
+PORT=3001
+
+# Ethereum
+PRIVATE_KEY=your_private_key_here
+RPC_URL=https://eth-mainnet.g.alchemy.com/v2/your_key
+
+# Solana
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_PRIVATE_KEY=your_solana_private_key_here
+
+# Admin Wallet
+ADMIN_WALLET=0x7b861609f4f5977997a6478b09d81a7256d6c748
+SOLANA_ADMIN=J7bNrvf26uiWWg8sM43eQMwunaPgmvi7pdRC55CnebPE
+
+# Features
+ENABLE_FLASH_LOANS=true
+ENABLE_ARBITRAGE=true
+ENABLE_GOVERNANCE=true
+"@ | Out-File -FilePath ".env" -Encoding UTF8
+    Write-Host "✅ .env template created - please update with your keys" -ForegroundColor Green
+}
+
+# Verify directory structure
+Write-Host "`n📁 Verifying directory structure..." -ForegroundColor Yellow
+$requiredDirs = @("contracts", "frontend", "backend", "scripts", "src", "frontend/utils", "frontend/components")
+foreach ($dir in $requiredDirs) {
+    if (Test-Path $dir) {
+        Write-Host "  ✅ $dir" -ForegroundColor Green
+    } else {
+        Write-Host "  ⚠️  Creating $dir..." -ForegroundColor Yellow
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
     }
-} catch {
-    Write-Host "  ⚠️  Git not found" -ForegroundColor Yellow
 }
 
-Write-Host "`n✅ Core verification complete!" -ForegroundColor Cyan
-Write-Host "🎯 Ready to proceed with TradeOS deployment" -ForegroundColor Cyan
+# Check TypeScript
+Write-Host "`n📘 Checking TypeScript..." -ForegroundColor Yellow
+if (Test-Path "tsconfig.json") {
+    Write-Host "✅ TypeScript configured" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  tsconfig.json not found" -ForegroundColor Yellow
+}
+
+Write-Host "`n✨ Core initialization complete!" -ForegroundColor Cyan
+Write-Host "================================" -ForegroundColor Cyan

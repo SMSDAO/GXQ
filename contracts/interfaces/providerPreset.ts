@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS TypeScript Module
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 export const providerPreset = {
   ETH:   "0xC02aaa39b223FE8D0a0e5C4F27eAD9083C756Cc2", // WETH
   BTC:   "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC

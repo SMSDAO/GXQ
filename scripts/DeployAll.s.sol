@@ -1,4 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
+// ============================================================================
+// TradeOS Smart Contract
+// Auto-generated header by add-code-blocks.js
+// Part of the TradeOS V1.1 Full Stack Platform
+// ============================================================================
+
+
 pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";

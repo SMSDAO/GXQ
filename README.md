@@ -1,288 +1,118 @@
-# 🚀 TradeOS - Quantum-Grade DeFi Automation Platform
+# 🚀 TradeOS V1.1 - Full Stack Trading Platform
 
-TradeOS is a comprehensive decentralized finance automation platform with quantum-grade execution capabilities across multiple blockchains including Ethereum, Polygon, Optimism, Base, and Solana.
+TradeOS is a quantum-grade automation platform for cross-chain trading across Ethereum, Solana, Monad, and more.
+
+## 📋 Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Deployment](#deployment)
+- [Architecture](#architecture)
+- [Development](#development)
 
 ## ✨ Features
 
-- **🧠 MXM (Model eXecution Manager)**: Dynamic function execution system for automated trading strategies
-- **📋 MQM (Model Queue Manager)**: Advanced job queue and scheduling system with priority management
-- **⚡ Flash Loan Integration**: Execute complex arbitrage strategies with flash loan support
-- **🔄 Multi-Chain Support**: Deploy and trade across EVM chains and Solana
-- **🎨 Dynamic Widget Generation**: Auto-generate UI components for wallet connect, swap, bridge, and more
-- **🏅 Sovereign Badge System**: NFT-based achievement and reputation tracking
-- **🌟 Aura Mapping**: Visual effects system based on user roles and achievements
-- **🔐 Role-Based Access Control**: Admin, contributor, investor, and user tiers
+- **Cross-Chain Support**: Ethereum, Solana, Polygon, Base, and more
+- **Flash Loan Integration**: DyDx-style flash loans for arbitrage
+- **Automated Trading Bots**: Front-running, arbitrage, and MEV strategies
+- **Governance System**: DAO-based decision making
+- **NFT Badges**: Sovereign contributor badges
+- **LP Scoring**: Liquidity provider reputation system
+- **Admin Dashboard**: Complete control panel for system management
 
-## 🚀 One-Click Deployment
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ 
+- npm or yarn
 - Git
-- PowerShell 7+ (for deployment scripts)
-- MongoDB (optional, for backend features)
 
-### Quick Start
-
-**Deploy Development Environment:**
-```bash
-pwsh one-click-deploy.ps1 -Environment DEV -AutoStart
-```
-
-**Deploy Production Environment:**
-```bash
-pwsh one-click-deploy.ps1 -Environment PROD
-```
-
-**Deploy with Quick Mode (skip tests):**
-```bash
-pwsh one-click-deploy.ps1 -Environment DEV -Quick
-```
-
-### Manual Deployment
+### One-Command Installation
 
 ```bash
-# 1. Install dependencies
-npm install
+# Clone the repository
+git clone https://github.com/SMSDAO/GXQ.git
+cd GXQ
 
-# 2. Run core initialization
-pwsh init-core.ps1
-
-# 3. Generate widgets
-npx ts-node create-widget-relay.ts --walletConnect --init-swap --bridge --fxGlow --sovereignBadge
-
-# 4. Build frontend
-npm run build
-
-# 5. Start development server
-npm run dev
+# Run automated installation
+./install-deploy.sh
 ```
 
-## 📁 Project Structure
+Or on Windows:
+```powershell
+.\init-core.ps1
+```
+
+## 📦 Installation
+
+### Manual Installation
+
+1. **Clone the repository**
+2. **Create required directories**
+3. **Install dependencies**: `npm install`
+4. **Setup environment**: Edit `.env` with your configuration
+5. **Link contracts**: Symlinks created automatically
+
+## ⚙️ Configuration
+
+Create a `.env` file in the root directory with your keys and configuration.
+
+## 🚢 Deployment
+
+### Automated Deployment
+
+Use the TradeOS Orchestrator for full deployment:
+
+```bash
+# On Windows
+.\TradeOS-orchestrator.bat
+
+# On Linux/Mac
+./install-deploy.sh
+```
+
+## 🏗️ Architecture
 
 ```
 GXQ/
-├── backend/              # Backend API server
-│   ├── api/             # API endpoints
-│   │   ├── mxm.js       # MXM API routes
-│   │   ├── mqm.js       # MQM API routes
-│   │   └── ...
-│   ├── models/          # Data models
-│   │   ├── MXM.js       # Model eXecution Manager
-│   │   └── MQM.js       # Model Queue Manager
-│   ├── db/              # Database configuration
-│   └── server.js        # Express server
-├── frontend/            # Next.js frontend
-│   ├── components/      # React components
-│   │   ├── botWidgets/  # Auto-generated widgets
-│   │   └── services/    # Service integrations
-│   ├── pages/           # Next.js pages
-│   └── utils/           # Utility functions
-├── contracts/           # Solidity smart contracts
-├── scripts/             # Deployment scripts
-│   ├── auraMap.ts       # Aura mapping generator
-│   └── ...
-├── tests/               # Test suite
-│   ├── unit/            # Unit tests
-│   ├── integration/     # Integration tests
-│   └── utils/           # Test utilities
-├── init-core.ps1        # Core initialization script
-├── deploy-runner.ps1    # Deployment runner
-└── one-click-deploy.ps1 # One-click deployment
+├── contracts/          # Smart contracts (Solidity)
+├── src/               # Symlinked contracts for Foundry
+├── backend/           # Node.js backend
+├── frontend/          # Next.js frontend
+├── scripts/           # Deployment & automation scripts
+└── config/            # Configuration files
 ```
 
-## 🧪 Testing
+## 🛠️ Development
 
-### Run All Tests
+### Running Development Server
+
 ```bash
-npm test
+npm run dev
 ```
 
-### Run Unit Tests
-```bash
-npm run test:unit
-```
+Visit `http://localhost:3000`
 
-### Run Integration Tests
-```bash
-npm run test:integration
-```
-
-### Watch Mode
-```bash
-npm run test:watch
-```
-
-## 🔧 Development Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build production bundle |
-| `npm run start` | Start production server |
-| `npm test` | Run test suite |
-| `npm run deploy:dev` | Deploy to DEV environment |
-| `npm run deploy:test` | Deploy to TEST environment |
-| `npm run deploy:prod` | Deploy to PROD environment |
-
-## 🎨 Widget Generation
-
-Generate UI widgets dynamically:
+### Generate Widgets
 
 ```bash
 npx ts-node create-widget-relay.ts --walletConnect --init-swap --bridge --fxGlow --sovereignBadge
 ```
 
-Available widget flags:
-- `--walletConnect`: WalletConnect integration widget
-- `--init-swap`: Token swap widget
-- `--bridge`: Cross-chain bridge widget
-- `--fxGlow`: Visual FX glow effects
-- `--sovereignBadge`: Badge display widget
+## 🔐 Security
 
-## 🧠 MXM (Model eXecution Manager)
+- All admin functions protected with `onlyAdmin` modifier
+- Flash loan safety checks implemented
+- See `auditReport.md` for full security audit
 
-Execute automated trading strategies:
+## 👥 Team
 
-### Create Job
-```javascript
-POST /api/mxm/jobs
-{
-  "modelType": "arbitrage",
-  "input": {
-    "tokenIn": "ETH",
-    "tokenOut": "USDC",
-    "amountIn": "1.0",
-    "dexes": ["Uniswap", "Sushiswap"]
-  },
-  "priority": 8
-}
-```
-
-### Execute Job
-```javascript
-POST /api/mxm/jobs/:jobId/execute
-```
-
-## 📋 MQM (Model Queue Manager)
-
-Manage job queues and scheduling:
-
-### Enqueue Job
-```javascript
-POST /api/mqm/enqueue
-{
-  "queueName": "arbitrage",
-  "modelType": "arbitrage",
-  "input": { /* ... */ },
-  "priority": 8
-}
-```
-
-### Get Queue Status
-```javascript
-GET /api/mqm/queues/:queueName/status
-```
-
-### Start Queue Processor
-```javascript
-POST /api/mqm/processor/start
-{
-  "intervalMs": 10000
-}
-```
-
-## 🌐 API Endpoints
-
-### Backend API
-- Base URL: `http://localhost:3001/api`
-- MXM: `/api/mxm/*`
-- MQM: `/api/mqm/*`
-- Fees: `/api/fees`
-- Auth: `/api/auth`
-- Governance: `/api/governance`
-
-### Frontend
-- Dev: `http://localhost:3000`
-- Admin Dashboard: `http://localhost:3000/adminDashboard`
-
-## 🔐 Environment Variables
-
-Create a `.env.DEV`, `.env.TEST`, or `.env.PROD` file:
-
-```env
-NODE_ENV=development
-PORT=3001
-MONGO_URI=mongodb://localhost:27017/tradeos_dev
-
-# API Keys
-INFURA_KEY=your_infura_key
-ALCHEMY_KEY=your_alchemy_key
-ETHERSCAN_KEY=your_etherscan_key
-
-# Admin
-ADMIN_ADDRESS=0x7b861609f4f5977997a6478b09d81a7256d6c748
-
-# Features
-ENABLE_MXM=true
-ENABLE_MQM=true
-ENABLE_FLASHLOAN=true
-ENABLE_ARBITRAGE=true
-```
-
-## 🛠️ Troubleshooting
-
-### PowerShell Execution Policy
-If scripts fail to run:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### Node.js Version
-Ensure you're using Node.js 18+:
-```bash
-node --version
-```
-
-### MongoDB Connection
-If MongoDB errors occur, ensure MongoDB is running:
-```bash
-# macOS/Linux
-sudo systemctl start mongodb
-
-# Windows
-net start MongoDB
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `npm test`
-5. Commit and push
-6. Create a pull request
-
-## 📄 License
-
-Copyright © 2025 TradeOS / SMSDAO
-
-## 🔗 Links
-
-- Repository: https://github.com/SMSDAO/GXQ
-- Documentation: Coming soon
-- Discord: Coming soon
-
-## 🎯 Roadmap
-
-- [ ] Multi-chain deployment automation
-- [ ] Advanced MEV protection
-- [ ] DAO governance integration
-- [ ] Mobile app (iOS/Android)
-- [ ] Desktop app (Electron)
-- [ ] Advanced analytics dashboard
-- [ ] Machine learning price prediction
+**Reserve Address**: `0x7b861609f4f5977997a6478b09d81a7256d6c748`  
+**Solana Wallet**: `J7bNrvf26uiWWg8sM43eQMwunaPgmvi7pdRC55CnebPE`
 
 ---
 
-**Made with ❤️ by the TradeOS team**
+Built with ⚡ by the TradeOS Team

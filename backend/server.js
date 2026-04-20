@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS JavaScript Module
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');

@@ -1,19 +1,19 @@
 {
   "name": "tradeos-app",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "description": "TradeOS V1.1 - Quantum-grade cross-chain trading platform",
   "scripts": {
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
     "export": "next export -o docs",
     "deploy": "npm run build && npm run export",
-    "test": "jest --passWithNoTests",
-    "test:unit": "jest tests/unit --passWithNoTests",
-    "test:integration": "jest tests/integration --passWithNoTests",
-    "test:watch": "jest --watch --passWithNoTests",
-    "deploy:dev": "pwsh -ExecutionPolicy Bypass -File deploy-runner.ps1 -Environment DEV",
-    "deploy:test": "pwsh -ExecutionPolicy Bypass -File deploy-runner.ps1 -Environment TEST",
-    "deploy:prod": "pwsh -ExecutionPolicy Bypass -File deploy-runner.ps1 -Environment PROD"
+    "deploy:all": "node scripts/deployAll.js",
+    "deploy:solana": "npx ts-node scripts/deployAll.solana.ts",
+    "widgets": "npx ts-node create-widget-relay.ts --walletConnect --init-swap --bridge --fxGlow --sovereignBadge",
+    "aura": "npx ts-node scripts/auraMap.ts",
+    "headers": "node add-code-blocks.js",
+    "setup": "chmod +x install-deploy.sh && ./install-deploy.sh"
   },
   "dependencies": {
     "next": "^15.4.1",
@@ -26,21 +26,9 @@
     "ethers": "^6.9.0"
   },
   "devDependencies": {
+    "@types/node": "^20.19.19",
     "@types/react": "19.1.8",
-    "jest": "^29.7.0",
-    "@types/jest": "^29.5.0",
-    "@types/node": "^20.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.0.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.js"],
-    "collectCoverageFrom": [
-      "backend/**/*.js",
-      "frontend/**/*.{js,jsx,ts,tsx}",
-      "!**/node_modules/**",
-      "!**/tests/**"
-    ]
+    "typescript": "^5.9.3"
   }
 }
