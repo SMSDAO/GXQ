@@ -1,0 +1,75 @@
+{
+  "version": "1.1.0",
+  "name": "TradeOS Full Stack Platform",
+  "networks": {
+    "ethereum": {
+      "rpcUrl": "https://eth-mainnet.g.alchemy.com/v2/your_key",
+      "chainId": 1,
+      "contracts": [
+        "AdminControl",
+        "VaultController",
+        "LPController",
+        "ProfitSplitter",
+        "TradeOSAccess",
+        "TradeOSBadges",
+        "FeeRouter",
+        "TradeOSGovernance",
+        "FlashLoanDyDx",
+        "FlashLoanExecutor"
+      ]
+    },
+    "polygon": {
+      "rpcUrl": "https://polygon-mainnet.g.alchemy.com/v2/your_key",
+      "chainId": 137,
+      "contracts": [
+        "AdminControl",
+        "VaultController",
+        "FeeRouter"
+      ]
+    },
+    "base": {
+      "rpcUrl": "https://mainnet.base.org",
+      "chainId": 8453,
+      "contracts": [
+        "AdminControl",
+        "FeeRouter"
+      ]
+    },
+    "solana": {
+      "rpcUrl": "https://api.mainnet-beta.solana.com",
+      "programIds": []
+    }
+  },
+  "admin": {
+    "ethereum": "0x7b861609f4f5977997a6478b09d81a7256d6c748",
+    "solana": "J7bNrvf26uiWWg8sM43eQMwunaPgmvi7pdRC55CnebPE"
+  },
+  "features": {
+    "flashLoans": true,
+    "arbitrage": true,
+    "governance": true,
+    "badges": true,
+    "auraMap": true,
+    "crossChainBridge": true
+  },
+  "frontend": {
+    "port": 3000,
+    "apiUrl": "http://localhost:3001"
+  },
+  "backend": {
+    "port": 3001,
+    "mongoUri": "mongodb://localhost:27017/tradeos"
+  },
+  "deployment": {
+    "autoGenerate": {
+      "widgets": true,
+      "auraMap": true,
+      "codeHeaders": true
+    },
+    "verification": {
+      "etherscan": true,
+      "polygonscan": true,
+      "basescan": true
+    }
+  }
+}

@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS TypeScript Module
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 ﻿// File: frontend/components/services/fxService.ts
 
 // 1. Interfaces

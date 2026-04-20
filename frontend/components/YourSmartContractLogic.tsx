@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * TradeOS React Component
+ * Auto-generated header by add-code-blocks.js
+ * Part of the TradeOS V1.1 Full Stack Platform
+ * ============================================================================
+ */
+
 // YourSmartContractLogic.tsx
 
 import React, { useEffect } from 'react';

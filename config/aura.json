@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "gridSize": 20,
+  "updateInterval": 5000,
+  "colors": {
+    "low": "#1a1f3a",
+    "medium": "#4169b0",
+    "high": "#7db5ff",
+    "legendary": "#ffd700"
+  },
+  "effects": {
+    "glow": true,
+    "pulse": true,
+    "particles": false
+  }
+}
