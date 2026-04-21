@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { getFXProfile } from '../components/services/fxService';
+import { getFXProfile } from '../frontend/components/services/fxService';
 
 export default function ProfileAura({ role = 'contributor' }) {
   const fx = getFXProfile(role);

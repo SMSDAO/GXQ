@@ -31,10 +31,15 @@ contract AirdropSpinGame is ReentrancyGuard {
     
     mapping(bytes32 => Campaign) public campaigns;
     mapping(address => mapping(bytes32 => UserData)) public userData;
+    // Commit-reveal storage: users first commit keccak256(user,campaignId,nonce),
+    // then reveal nonce in a later block to reduce reward manipulation.
+    mapping(address => mapping(bytes32 => bytes32)) private spinCommitments;
+    mapping(address => mapping(bytes32 => uint256)) private spinCommitBlock;
     mapping(address => bool) public approvedLaunchers;
     
     uint256 public constant BASE_WAIT_TIME = 12 hours;
     uint256 public constant STRIKE_BONUS_DAYS = 3;
+    uint256 public constant COMMITMENT_EXPIRATION_BLOCKS = 256;
     uint256 public devFeePercent = 2; // 2% dev fee
     uint256 public launcherFeePercent = 1; // 1% launcher fee
     
@@ -44,6 +49,7 @@ contract AirdropSpinGame is ReentrancyGuard {
     event CampaignCreated(bytes32 indexed campaignId, address indexed launcher, address token, uint256 amount);
     event SpinExecuted(address indexed user, bytes32 indexed campaignId, uint256 reward);
     event StrikeAchieved(address indexed user, uint256 strikes);
+    event SpinCommitted(address indexed user, bytes32 indexed campaignId, bytes32 commitment);
     
     modifier onlyAdmin() {
         require(msg.sender == admin, "Not admin");
@@ -101,7 +107,7 @@ contract AirdropSpinGame is ReentrancyGuard {
     /**
      * @dev Execute spin - randomized reward within range
      */
-    function spin(bytes32 campaignId) external nonReentrant {
+    function spin(bytes32 campaignId, bytes32 nonce) external nonReentrant {
         Campaign storage campaign = campaigns[campaignId];
         require(campaign.active, "Campaign not active");
         require(campaign.remainingAmount > 0, "Campaign depleted");
@@ -113,9 +119,31 @@ contract AirdropSpinGame is ReentrancyGuard {
             user.lastSpin == 0 || block.timestamp >= user.lastSpin + waitTime,
             "Must wait before next spin"
         );
+
+        bytes32 storedCommitment = spinCommitments[msg.sender][campaignId];
+        uint256 committedAtBlock = spinCommitBlock[msg.sender][campaignId];
+        require(storedCommitment != bytes32(0), "Commitment required");
+        require(block.number > committedAtBlock, "Wait one block after commit");
+        require(
+            block.number - committedAtBlock <= COMMITMENT_EXPIRATION_BLOCKS,
+            "Commitment expired"
+        );
+        require(
+            keccak256(abi.encodePacked(msg.sender, campaignId, nonce)) == storedCommitment,
+            "Invalid commitment reveal"
+        );
+        delete spinCommitments[msg.sender][campaignId];
+        delete spinCommitBlock[msg.sender][campaignId];
         
-        // Calculate reward (pseudo-random)
-        uint256 reward = _calculateReward(campaign.minReward, campaign.maxReward, msg.sender, campaign.remainingAmount);
+        uint256 reward = _calculateReward(
+            campaign.minReward,
+            campaign.maxReward,
+            msg.sender,
+            campaign.remainingAmount,
+            campaignId,
+            nonce,
+            committedAtBlock
+        );
         require(reward <= campaign.remainingAmount, "Insufficient campaign funds");
         
         // Update strikes
@@ -152,20 +180,42 @@ contract AirdropSpinGame is ReentrancyGuard {
     }
     
     /**
-     * @dev Pseudo-random reward calculation
-     * @notice SECURITY WARNING: This uses block.timestamp and block.prevrandao for randomness,
-     * which can be influenced by miners/validators. For production use, consider implementing
-     * a verifiable randomness solution (e.g., Chainlink VRF or commit-reveal pattern) to
-     * prevent manipulation of rewards and ensure fair distribution of airdrop funds.
+     * @dev Commit a spin nonce hash before calling spin().
+     * commitment must be keccak256(abi.encodePacked(user, campaignId, nonce)).
+     */
+    function commitSpin(bytes32 campaignId, bytes32 commitment) external {
+        require(commitment != bytes32(0), "Invalid commitment");
+        spinCommitments[msg.sender][campaignId] = commitment;
+        spinCommitBlock[msg.sender][campaignId] = block.number;
+        emit SpinCommitted(msg.sender, campaignId, commitment);
+    }
+
+    /**
+     * @dev Commit-reveal based reward calculation using a prior-block hash and user nonce reveal.
      */
     function _calculateReward(
         uint256 min,
         uint256 max,
         address user,
-        uint256 remaining
+        uint256 remaining,
+        bytes32 campaignId,
+        bytes32 nonce,
+        uint256 committedAtBlock
     ) private view returns (uint256) {
+        require(max > min, "Invalid reward range");
+        bytes32 commitBlockHash = blockhash(committedAtBlock);
+        require(commitBlockHash != bytes32(0), "Commit block too old (>256 blocks)");
+
         uint256 randomHash = uint256(
-            keccak256(abi.encodePacked(block.timestamp, block.prevrandao, user, remaining))
+            keccak256(
+                abi.encodePacked(
+                    commitBlockHash,
+                    user,
+                    campaignId,
+                    nonce,
+                    remaining
+                )
+            )
         );
         uint256 range = max - min;
         uint256 reward = min + (randomHash % range);
