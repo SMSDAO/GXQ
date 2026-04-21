@@ -78,7 +78,16 @@ if (-not $SkipDependencies) {
 Write-Host "`n⚙️  STEP 4: Environment Configuration" -ForegroundColor Cyan
 
 $envFile = Join-Path $PSScriptRoot ".env.$Environment"
+$defaultEnvFile = Join-Path $PSScriptRoot ".env"
 $envExampleFile = Join-Path $PSScriptRoot ".env.example"
+
+# Map environment name to NODE_ENV value expected by Node/Next.js tooling
+$nodeEnv = switch ($Environment.ToUpper()) {
+    "DEV"  { "development" }
+    "PROD" { "production" }
+    "TEST" { "test" }
+    default { $Environment.ToLower() }
+}
 
 if (-not (Test-Path $envFile)) {
     if (Test-Path $envExampleFile) {
@@ -88,7 +97,7 @@ if (-not (Test-Path $envFile)) {
         # Create default .env file
         $defaultEnv = @"
 # TradeOS Environment Configuration - $Environment
-NODE_ENV=$($Environment.ToLower())
+NODE_ENV=$nodeEnv
 PORT=3001
 MONGO_URI=mongodb://localhost:27017/tradeos_$($Environment.ToLower())
 
@@ -111,6 +120,12 @@ ENABLE_ARBITRAGE=true
     }
 } else {
     Write-Host "  ✅ Environment file exists: $envFile" -ForegroundColor Green
+}
+
+# Also write (or symlink) to plain .env so dotenv.config() in server.js picks it up
+if (-not (Test-Path $defaultEnvFile)) {
+    Copy-Item $envFile $defaultEnvFile
+    Write-Host "  ✅ Copied $envFile → .env for backend dotenv resolution" -ForegroundColor Green
 }
 
 # ============================================================================
@@ -187,13 +202,14 @@ Write-Host "`n🚀 STEP 9: Start Services" -ForegroundColor Cyan
 if ($Environment -eq "DEV") {
     Write-Host "  🔧 Starting development servers..." -ForegroundColor Yellow
     Write-Host "  📍 Frontend: http://localhost:3000" -ForegroundColor Gray
-    Write-Host "  📍 Backend: http://localhost:3001" -ForegroundColor Gray
+    Write-Host "  📍 Backend:  http://localhost:3001" -ForegroundColor Gray
     
-    # Start dev server in new window/tab
     if ($OSType -eq "Windows") {
         Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot'; npm run dev"
+        Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot'; node backend/server.js"
     } else {
-        Write-Host "`n  ▶️  Run 'npm run dev' to start the development server" -ForegroundColor Cyan
+        Write-Host "`n  ▶️  Run 'npm run dev' to start the frontend development server" -ForegroundColor Cyan
+        Write-Host "  ▶️  Run 'node backend/server.js' to start the backend API server" -ForegroundColor Cyan
     }
 } elseif ($Environment -eq "TEST") {
     Write-Host "  🧪 TEST environment configured" -ForegroundColor Yellow

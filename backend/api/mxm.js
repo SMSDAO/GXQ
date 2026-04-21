@@ -45,9 +45,14 @@ router.post('/jobs/:jobId/execute', async (req, res) => {
       result
     });
   } catch (error) {
-    res.status(500).json({ 
-      error: error.message 
-    });
+    const msg = error.message || '';
+    if (msg.includes('not found')) {
+      return res.status(404).json({ error: msg });
+    }
+    if (msg.includes('not in pending state')) {
+      return res.status(409).json({ error: msg });
+    }
+    res.status(500).json({ error: msg });
   }
 });
 

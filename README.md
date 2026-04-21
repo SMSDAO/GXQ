@@ -101,7 +101,7 @@ pwsh one-click-deploy.ps1 -Environment DEV -AutoStart
 Create a `.env` file in the root directory:
 
 ```env
-MONGODB_URI=mongodb+srv://...
+MONGO_URI=mongodb+srv://...
 JWT_SECRET=your_secret_here
 NEXT_PUBLIC_API_URL=https://jup-nine.vercel.app/api
 SOLANA_RPC=https://api.mainnet-beta.solana.com

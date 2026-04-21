@@ -6,47 +6,38 @@
 
 #### 1. API Routes Configuration
 
-The current `vercel.json` routes all API requests to `/backend/server.js`:
+The current `vercel.json` deploys only the Next.js frontend:
 
 ```json
-"routes": [
-  {
-    "src": "/api/(.*)",
-    "dest": "/backend/server.js"
-  }
-]
-```
-
-**Limitation**: This configuration may not work optimally with Vercel's serverless architecture, which expects each API route to be a separate serverless function. 
-
-**Recommended Approach for Production**:
-- Create individual API route files in `/api` directory (e.g., `/api/mxm.js`, `/api/mqm.js`)
-- Each file should be a standalone serverless function
-- Remove the generic routing and let Vercel handle routes natively
-
-**Alternative**: Keep the current Express server setup and deploy to a different platform that supports traditional Node.js applications (e.g., Railway, Render, Heroku).
-
-#### 2. Environment Variables
-
-The current configuration uses:
-
-```json
-"env": {
-  "NODE_ENV": "production",
-  "MONGO_URI": "@mongo_uri",
-  "PORT": "3001"
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }
 ```
 
-**Issues**:
-- `@mongo_uri` expects a Vercel secret named `mongo_uri` to be configured in the Vercel dashboard
-- If the secret doesn't exist, the deployment will fail
-- `PORT` is hardcoded to `3001`, but Vercel's serverless functions manage ports automatically
+**Limitation**: This configuration deploys the frontend only. The Express backend under `/backend` is **not** run by Vercel with this config, so `/api/...` routes served by `backend/server.js` will 404 on Vercel.
 
-**Recommended Fix**:
-- Remove the `@` syntax if not using Vercel secrets: `"MONGO_URI": process.env.MONGO_URI`
-- Or properly configure the secret in Vercel dashboard before deployment
-- Remove or make `PORT` optional since Vercel assigns ports dynamically
+**Recommended Approaches for Production**:
+- **Option A (Vercel native)**: Create individual API route files in the Next.js `/pages/api` (or `/app/api`) directory. Each file becomes a standalone serverless function; no `routes` config needed.
+- **Option B (Separate deployment)**: Keep the Express server and deploy the backend to Railway, Render, or Heroku. Update `NEXT_PUBLIC_API_URL` to point to the backend host.
+
+#### 2. Environment Variables
+
+#### 2. Environment Variables
+
+Environment variables should be set in the **Vercel dashboard** (Settings → Environment Variables) or via the Vercel CLI:
+
+```bash
+vercel env add MONGO_URI
+vercel env add JWT_SECRET
+vercel env add NEXT_PUBLIC_API_URL
+```
+
+The current `vercel.json` does **not** contain an `env` section — all secrets must be configured through the dashboard or CLI before deployment.
+
+**Do not** add `PORT` — Vercel's serverless functions manage ports automatically.
 
 #### 3. Package Structure
 

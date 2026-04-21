@@ -187,7 +187,7 @@ try {
     Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
     
     # Run full deployment script
-    & "$PSScriptRoot/deploy-runner.ps1" -Environment $Environment -SkipDependencies -SkipTests:$Quick
+    & "$PSScriptRoot/deploy-runner.ps1" -Environment $Environment -SkipDependencies:$Quick -SkipTests:$Quick
     
     Write-Host ""
     Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan

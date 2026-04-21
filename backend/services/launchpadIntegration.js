@@ -171,29 +171,31 @@ class LaunchpadIntegration {
   }
 
   /**
-   * Get token prices from multiple sources
+   * Get token prices from multiple sources in parallel.
+   * NOTE: Assumes 6-decimal tokens for the amount sent to Jupiter.
+   * For tokens with different decimals, obtain decimals from a token list first.
    */
   async getTokenPrices(mints) {
     try {
+      const results = await Promise.all(
+        mints.map(mint =>
+          this.getJupiterQuote(
+            mint,
+            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+            1000000, // 1 token (assuming 6 decimals)
+            50
+          ).then(quote => ({ mint, quote }))
+        )
+      );
+
       const prices = {};
-      
-      for (const mint of mints) {
-        const quote = await this.getJupiterQuote(
-          mint,
-          'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
-          1000000, // 1 token (assuming 6 decimals)
-          50
-        );
-        
+      for (const { mint, quote } of results) {
         if (quote.success) {
           prices[mint] = parseFloat(quote.outputAmount) / 1000000;
         }
       }
-      
-      return {
-        success: true,
-        prices
-      };
+
+      return { success: true, prices };
     } catch (error) {
       console.error('Token prices error:', error.message);
       return { success: false, error: error.message };

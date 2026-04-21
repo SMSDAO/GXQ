@@ -2,6 +2,7 @@
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
@@ -10,6 +11,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * Users can spin every 12 hours, with strike system reducing wait time
  */
 contract AirdropSpinGame is ReentrancyGuard {
+    using SafeERC20 for IERC20;
     address public admin;
     
     struct Campaign {
@@ -78,7 +80,7 @@ contract AirdropSpinGame is ReentrancyGuard {
         
         bytes32 campaignId = keccak256(abi.encodePacked(msg.sender, token, block.timestamp));
         
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         
         campaigns[campaignId] = Campaign({
             token: token,
@@ -95,13 +97,21 @@ contract AirdropSpinGame is ReentrancyGuard {
     }
     
     /**
-     * @dev Calculate wait time for a user.
-     * Currently, this always returns the base wait time.
-     * @param /* user */ User address (unused in current implementation)
+     * @dev Calculate wait time for a user in a given campaign.
+     * Reduces by 10% per STRIKE_BONUS_DAYS consecutive strikes, capped at 50% reduction.
+     * @param user The address of the user
+     * @param campaignId The campaign identifier
      */
-    function getWaitTime(address /* user */) public pure returns (uint256) {
-        // Strike-based reductions are not yet implemented; always use base wait time.
-        return BASE_WAIT_TIME;
+    function getWaitTime(address user, bytes32 campaignId) public view returns (uint256) {
+        uint256 strikes = userData[user][campaignId].strikes;
+        if (strikes < STRIKE_BONUS_DAYS) {
+            return BASE_WAIT_TIME;
+        }
+        // Each full group of STRIKE_BONUS_DAYS reduces wait by 10%, cap at 5 groups (50%)
+        uint256 reductionGroups = strikes / STRIKE_BONUS_DAYS;
+        if (reductionGroups > 5) reductionGroups = 5;
+        uint256 reduction = (BASE_WAIT_TIME * reductionGroups * 10) / 100;
+        return BASE_WAIT_TIME - reduction;
     }
     
     /**
@@ -113,7 +123,7 @@ contract AirdropSpinGame is ReentrancyGuard {
         require(campaign.remainingAmount > 0, "Campaign depleted");
         
         UserData storage user = userData[msg.sender][campaignId];
-        uint256 waitTime = getWaitTime(msg.sender);
+        uint256 waitTime = getWaitTime(msg.sender, campaignId);
         
         require(
             user.lastSpin == 0 || block.timestamp >= user.lastSpin + waitTime,
@@ -172,9 +182,9 @@ contract AirdropSpinGame is ReentrancyGuard {
         campaign.remainingAmount -= reward;
         
         // Transfer rewards
-        IERC20(campaign.token).transfer(msg.sender, userReward);
-        IERC20(campaign.token).transfer(devWallet, devFee);
-        IERC20(campaign.token).transfer(gxqStudio, launcherFee);
+        IERC20(campaign.token).safeTransfer(msg.sender, userReward);
+        IERC20(campaign.token).safeTransfer(devWallet, devFee);
+        IERC20(campaign.token).safeTransfer(gxqStudio, launcherFee);
         
         emit SpinExecuted(msg.sender, campaignId, userReward);
     }
@@ -217,7 +227,7 @@ contract AirdropSpinGame is ReentrancyGuard {
                 )
             )
         );
-        uint256 range = max - min;
+        uint256 range = max - min + 1;
         uint256 reward = min + (randomHash % range);
         
         // Ensure we don't exceed remaining
@@ -256,7 +266,7 @@ contract AirdropSpinGame is ReentrancyGuard {
         campaign.remainingAmount = 0;
         campaign.active = false;
         
-        IERC20(campaign.token).transfer(campaign.launcher, amount);
+        IERC20(campaign.token).safeTransfer(campaign.launcher, amount);
     }
     
     /**
@@ -270,7 +280,7 @@ contract AirdropSpinGame is ReentrancyGuard {
         uint256 nextSpinTime
     ) {
         UserData memory data = userData[user][campaignId];
-        uint256 waitTime = getWaitTime(user);
+        uint256 waitTime = getWaitTime(user, campaignId);
         uint256 nextSpin = data.lastSpin > 0 ? data.lastSpin + waitTime : 0;
         
         return (data.lastSpin, data.strikes, data.totalWon, data.spinsCount, nextSpin);
@@ -283,7 +293,7 @@ contract AirdropSpinGame is ReentrancyGuard {
         UserData memory data = userData[user][campaignId];
         if (data.lastSpin == 0) return true;
         
-        uint256 waitTime = getWaitTime(user);
+        uint256 waitTime = getWaitTime(user, campaignId);
         return block.timestamp >= data.lastSpin + waitTime;
     }
 }

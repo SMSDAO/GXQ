@@ -21,7 +21,7 @@ interface UserSpinData {
   canSpin: boolean;
 }
 
-export default function AirdropSpinGame() {
+export default function AirdropSpinGame({ walletAddress }: { walletAddress?: string }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [userData, setUserData] = useState<UserSpinData | null>(null);
@@ -76,7 +76,11 @@ export default function AirdropSpinGame() {
 
   const loadUserData = async (campaignId: string) => {
     try {
-      const res = await axios.get(`/api/airdrop/user-data/${campaignId}`);
+      const address = walletAddress || (typeof window !== 'undefined' && (window as any).ethereum?.selectedAddress) || '';
+      const res = await axios.get(`/api/airdrop/user-data/${campaignId}`, {
+        params: address ? { address } : undefined,
+        headers: address ? { 'x-wallet-address': address } : undefined,
+      });
       setUserData(res.data);
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -95,8 +99,12 @@ export default function AirdropSpinGame() {
     setRotation(newRotation);
     
     try {
+      const address = walletAddress || (typeof window !== 'undefined' && (window as any).ethereum?.selectedAddress) || '';
       const res = await axios.post('/api/airdrop/spin', {
-        campaignId: selectedCampaign
+        campaignId: selectedCampaign,
+        address,
+      }, {
+        headers: address ? { 'x-wallet-address': address } : undefined,
       });
       
       setTimeout(() => {

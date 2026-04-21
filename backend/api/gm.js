@@ -204,14 +204,20 @@ router.post('/spend', async (req, res) => {
   }
 });
 
-// Helper function to update all user ranks
+// Helper function to update all user ranks via bulk write (O(N) DB ops, not O(N) round-trips)
 async function updateRanks() {
   try {
-    const users = await GMBalance.find().sort({ totalEarned: -1 });
-    for (let i = 0; i < users.length; i++) {
-      users[i].rank = i + 1;
-      await users[i].save();
-    }
+    const users = await GMBalance.find().sort({ totalEarned: -1 }).select('_id');
+    if (users.length === 0) return;
+
+    const operations = users.map((user, index) => ({
+      updateOne: {
+        filter: { _id: user._id },
+        update: { $set: { rank: index + 1 } }
+      }
+    }));
+
+    await GMBalance.bulkWrite(operations, { ordered: false });
   } catch (error) {
     console.error('Error updating ranks:', error);
   }

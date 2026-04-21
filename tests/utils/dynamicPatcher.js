@@ -35,32 +35,41 @@ class DynamicPatcher {
    */
   extractFunctions(code) {
     const functions = [];
+    const seen = new Set();
     
-    // Match function declarations
-    const functionRegex = /(?:function|const|let|var)\s+(\w+)\s*=?\s*(?:async\s*)?\(?/g;
+    // Match named function declarations: function name() / async function name()
+    const namedFuncRegex = /(async\s+)?function\s+(\w+)\s*\(/g;
     let match;
-    
-    while ((match = functionRegex.exec(code)) !== null) {
-      const functionName = match[1];
-      if (functionName && functionName !== 'require' && functionName !== 'module') {
-        functions.push({
-          name: functionName,
-          type: code.includes(`async`) ? 'async' : 'sync'
-        });
+    while ((match = namedFuncRegex.exec(code)) !== null) {
+      const isAsync = Boolean(match[1]);
+      const name = match[2];
+      if (name && !seen.has(name) && name !== 'require' && name !== 'module') {
+        seen.add(name);
+        functions.push({ name, type: isAsync ? 'async' : 'sync' });
+      }
+    }
+
+    // Match arrow/function expressions: const name = (async) (...) =>
+    const arrowFuncRegex = /(?:const|let|var)\s+(\w+)\s*=\s*(async\s*)?\(/g;
+    while ((match = arrowFuncRegex.exec(code)) !== null) {
+      const name = match[1];
+      const isAsync = Boolean(match[2]);
+      if (name && !seen.has(name) && name !== 'require' && name !== 'module') {
+        seen.add(name);
+        functions.push({ name, type: isAsync ? 'async' : 'sync' });
       }
     }
     
-    // Match class methods
-    const methodRegex = /(?:async\s+)?(\w+)\s*\([^)]*\)\s*{/g;
+    // Match class methods: (async) methodName(...) {
+    const methodRegex = /^\s+(async\s+)?(\w+)\s*\([^)]*\)\s*\{/gm;
     while ((match = methodRegex.exec(code)) !== null) {
-      const methodName = match[1];
-      if (methodName && 
-          methodName !== 'constructor' && 
-          !['if', 'for', 'while', 'switch'].includes(methodName)) {
-        functions.push({
-          name: methodName,
-          type: code.includes(`async ${methodName}`) ? 'async' : 'sync'
-        });
+      const isAsync = Boolean(match[1]);
+      const name = match[2];
+      if (name && !seen.has(name) &&
+          name !== 'constructor' &&
+          !['if', 'for', 'while', 'switch', 'catch'].includes(name)) {
+        seen.add(name);
+        functions.push({ name, type: isAsync ? 'async' : 'sync' });
       }
     }
     

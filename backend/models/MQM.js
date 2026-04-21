@@ -39,7 +39,15 @@ class MQM {
     this.processors = new Map();
     this.isProcessing = false;
     this.processingInterval = null;
-    this.initializeDefaultQueues();
+    // Do NOT await here; callers must await mqmInstance.init() before use.
+  }
+
+  /**
+   * Async initializer - must be awaited before the instance is used.
+   * Called explicitly during server startup.
+   */
+  async init() {
+    await this.initializeDefaultQueues();
   }
 
   // Initialize default queue configurations
@@ -81,8 +89,8 @@ class MQM {
       throw new Error(`Queue is disabled: ${queueName}`);
     }
 
-    // Create job using MXM
-    const job = await mxmInstance.createJob(modelType, input, priority);
+    // Create job using MXM, tagging with queueName
+    const job = await mxmInstance.createJob(modelType, input, priority, queueName);
     
     console.log(`📥 Enqueued job ${job.jobId} to queue: ${queueName}`);
     return job;
@@ -96,8 +104,8 @@ class MQM {
       return null;
     }
 
-    // Get pending jobs for this queue type
-    const pendingJobs = await mxmInstance.getPendingJobs();
+    // Get pending jobs scoped to this queue by queueName field
+    const pendingJobs = await mxmInstance.getPendingJobsByQueue(queueName);
     
     if (pendingJobs.length === 0) {
       return null;
@@ -262,12 +270,12 @@ class MQM {
     return await this.updateQueueConfig(queueName, { enabled: true });
   }
 
-  // Clear queue (cancel all pending jobs)
+  // Clear queue (cancel all pending jobs for a specific queue)
   async clearQueue(queueName) {
     const { ExecutionJob } = require('./MXM');
     
     const result = await ExecutionJob.updateMany(
-      { status: 'pending' },
+      { status: 'pending', queueName },
       { $set: { status: 'cancelled' } }
     );
 

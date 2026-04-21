@@ -28,8 +28,15 @@ describe('TradeOS System Integration Tests', () => {
   });
 
   test('Widget generation system', () => {
-    // This test will pass even if file doesn't exist yet (pre-generation)
-    expect(true).toBe(true);
+    const fs = require('fs');
+    const path = require('path');
+    const componentsPath = path.join(__dirname, '../../frontend/components');
+    expect(fs.existsSync(componentsPath)).toBe(true);
+    const entries = fs.readdirSync(componentsPath, { withFileTypes: true });
+    const hasComponentArtifact = entries.some(
+      e => e.isDirectory() || /\.(js|jsx|ts|tsx)$/.test(e.name)
+    );
+    expect(hasComponentArtifact).toBe(true);
   });
 
   test('Environment configuration', () => {

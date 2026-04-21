@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const ExecutionJobSchema = new mongoose.Schema({
   jobId: { type: String, required: true, unique: true },
   modelType: { type: String, required: true }, // 'arbitrage', 'swap', 'flashloan', etc.
+  queueName: { type: String, default: null }, // Which MQM queue this job belongs to
   priority: { type: Number, default: 5 }, // 1-10, higher = more urgent
   status: { 
     type: String, 
@@ -117,12 +118,13 @@ class MXM {
   }
 
   // Create and queue a job
-  async createJob(modelType, input, priority = 5) {
+  async createJob(modelType, input, priority = 5, queueName = null) {
     const jobId = `${modelType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     const job = new ExecutionJob({
       jobId,
       modelType,
+      queueName,
       priority,
       input,
       status: 'pending'
@@ -187,6 +189,11 @@ class MXM {
       if (job.retryCount < job.maxRetries) {
         console.log(`🔄 Retrying job: ${jobId} (attempt ${job.retryCount + 1})`);
         job.status = 'pending';
+        job.startedAt = undefined;
+        job.completedAt = undefined;
+        job.executionTime = undefined;
+        job.error = undefined;
+        job.output = undefined;
         await job.save();
       }
       
@@ -206,6 +213,12 @@ class MXM {
   // Get all pending jobs
   async getPendingJobs() {
     return await ExecutionJob.find({ status: 'pending' })
+      .sort({ priority: -1, createdAt: 1 });
+  }
+
+  // Get pending jobs scoped to a specific queue
+  async getPendingJobsByQueue(queueName) {
+    return await ExecutionJob.find({ status: 'pending', queueName })
       .sort({ priority: -1, createdAt: 1 });
   }
 

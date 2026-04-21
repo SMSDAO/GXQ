@@ -7,9 +7,9 @@ The application features a sophisticated dark/light mode system with smooth tran
 
 **Implementation:**
 ```tsx
-import ThemeSwitcher from '@/components/ThemeSwitcher';
+import ThemeSwitcher from '../components/ThemeSwitcher';
 
-// Add to your layout
+// Add to your layout (adjust the relative path to match your file location)
 <ThemeSwitcher />
 ```
 
