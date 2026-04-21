@@ -1,6 +1,8 @@
 # 🚀 TradeOS GXQ Studio API Documentation
 
-**Base URL**: `https://jup-nine.vercel.app/api`
+**Base URL**: `https://<your-backend-host>/api`
+
+> **⚠️ Important:** The current Vercel deployment at `https://jup-nine.vercel.app` serves the **Next.js frontend only**. The Express backend routes documented below will **404 on Vercel** unless the backend is deployed separately (Railway, Render, Heroku, etc.). Replace the base URL above with the actual host of your deployed backend.
 
 ## 📋 Table of Contents
 - [Airdrop Spin Game](#airdrop-spin-game)
@@ -437,12 +439,12 @@ GET /api/gm/balance/:wallet
 
 ## 🔐 Authentication
 
-Most endpoints require wallet authentication via signed message:
+> **Note:** Wallet signature authentication (`X-Signature` / `X-Message` headers) is **not yet enforced** by the current Express routes. The headers below are documented for the intended production auth model. Currently only `X-Wallet-Address` (or the `address` body/query param) is read to identify the caller.
 
 ```http
 X-Wallet-Address: 0x...
-X-Signature: 0x...
-X-Message: timestamp_message
+X-Signature: 0x...      (planned - not currently validated)
+X-Message: timestamp_message  (planned - not currently validated)
 ```
 
 ---

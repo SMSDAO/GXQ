@@ -35,10 +35,10 @@ export default function AirdropSpinGame({ walletAddress }: { walletAddress?: str
   }, []);
 
   useEffect(() => {
-    if (selectedCampaign) {
+    if (selectedCampaign && walletAddress) {
       loadUserData(selectedCampaign);
     }
-  }, [selectedCampaign]);
+  }, [selectedCampaign, walletAddress]);
 
   useEffect(() => {
     if (userData && !userData.canSpin) {

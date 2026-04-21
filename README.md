@@ -154,7 +154,7 @@ vercel --prod
 ```
 
 Configure the following environment variables in Vercel dashboard:
-- `MONGODB_URI`
+- `MONGO_URI`
 - `JWT_SECRET`
 - `NEXT_PUBLIC_API_URL`
 

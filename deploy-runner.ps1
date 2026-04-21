@@ -122,11 +122,10 @@ ENABLE_ARBITRAGE=true
     Write-Host "  ✅ Environment file exists: $envFile" -ForegroundColor Green
 }
 
-# Also write (or symlink) to plain .env so dotenv.config() in server.js picks it up
-if (-not (Test-Path $defaultEnvFile)) {
-    Copy-Item $envFile $defaultEnvFile
-    Write-Host "  ✅ Copied $envFile → .env for backend dotenv resolution" -ForegroundColor Green
-}
+# Always overwrite plain .env so dotenv.config() in server.js picks up the selected environment.
+# This ensures switching DEV→TEST→PROD always reflects the correct config.
+Copy-Item -Path $envFile -Destination $defaultEnvFile -Force
+Write-Host "  ✅ Synced $envFile → .env for backend dotenv resolution" -ForegroundColor Green
 
 # ============================================================================
 # STEP 5: DATABASE SETUP

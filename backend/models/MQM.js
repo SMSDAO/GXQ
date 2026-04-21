@@ -214,7 +214,7 @@ class MQM {
       throw new Error(`Queue not found: ${queueName}`);
     }
 
-    const pendingJobs = await mxmInstance.getPendingJobs();
+    const pendingJobs = await mxmInstance.getPendingJobsByQueue(queueName);
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);

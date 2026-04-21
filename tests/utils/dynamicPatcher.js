@@ -49,8 +49,9 @@ class DynamicPatcher {
       }
     }
 
-    // Match arrow/function expressions: const name = (async) (...) =>
-    const arrowFuncRegex = /(?:const|let|var)\s+(\w+)\s*=\s*(async\s*)?\(/g;
+    // Match arrow/function expressions: const name = (async) (...) => ...
+    // Requires => to avoid matching plain const declarations like `const foo = bar(`
+    const arrowFuncRegex = /(?:const|let|var)\s+(\w+)\s*=\s*(async\s*)?\([^)]*\)\s*=>/g;
     while ((match = arrowFuncRegex.exec(code)) !== null) {
       const name = match[1];
       const isAsync = Boolean(match[2]);

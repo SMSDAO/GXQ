@@ -25,14 +25,21 @@ export default function RoleFXManagerUnified({ user }: RoleFXManagerUnifiedProps
     getUserBots(user.id)
     getAggregatorStatus()
 
+    const rippleClass = `fx-${chainFX.ripple}`
     document.body.style.setProperty('--fx-glow', fx.glowColor)
-    document.body.classList.add(`fx-${chainFX.ripple}`)
+    document.body.classList.add(rippleClass)
 
     const lastActiveAt = new Date(user.lastActive).getTime()
     const validatedLastActiveAt = Number.isFinite(lastActiveAt) ? lastActiveAt : Date.now()
     const daysInactive = (Date.now() - validatedLastActiveAt) / MILLISECONDS_PER_DAY
     const opacity = Math.max(1 - daysInactive / 30, 0.3)
     document.body.style.setProperty('--fx-opacity', `${opacity}`)
+
+    return () => {
+      document.body.classList.remove(rippleClass)
+      document.body.style.removeProperty('--fx-glow')
+      document.body.style.removeProperty('--fx-opacity')
+    }
   }, [user.id, user.role, user.chain, user.lastActive, user.milestones])
 
   return null

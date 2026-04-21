@@ -32,6 +32,7 @@ contract AirdropSpinGame is ReentrancyGuard {
     }
     
     mapping(bytes32 => Campaign) public campaigns;
+    mapping(address => uint256) private campaignCounter; // per-launcher nonce to avoid campaignId collisions
     mapping(address => mapping(bytes32 => UserData)) public userData;
     // Commit-reveal storage: users first commit keccak256(user,campaignId,nonce),
     // then reveal nonce in a later block to reduce reward manipulation.
@@ -78,7 +79,8 @@ contract AirdropSpinGame is ReentrancyGuard {
         require(maxReward <= amount / 10, "Max reward too high");
         require(minReward < maxReward, "Invalid reward range");
         
-        bytes32 campaignId = keccak256(abi.encodePacked(msg.sender, token, block.timestamp));
+        bytes32 campaignId = keccak256(abi.encodePacked(msg.sender, token, block.timestamp, campaignCounter[msg.sender]));
+        campaignCounter[msg.sender] += 1;
         
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         

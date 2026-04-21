@@ -189,11 +189,11 @@ class MXM {
       if (job.retryCount < job.maxRetries) {
         console.log(`🔄 Retrying job: ${jobId} (attempt ${job.retryCount + 1})`);
         job.status = 'pending';
-        job.startedAt = undefined;
-        job.completedAt = undefined;
-        job.executionTime = undefined;
-        job.error = undefined;
-        job.output = undefined;
+        job.startedAt = null;
+        job.completedAt = null;
+        job.executionTime = 0;
+        job.error = null;
+        job.output = null;
         await job.save();
       }
       

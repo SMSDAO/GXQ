@@ -72,14 +72,16 @@ import ThemeSwitcher from '../components/ThemeSwitcher';
 
 ### Integration
 ```tsx
-import AirdropSpinGame from '@/components/AirdropSpinGame';
+import AirdropSpinGame from '../components/AirdropSpinGame';
 
-<AirdropSpinGame />
+// Adjust the relative path to match your file location
+<AirdropSpinGame walletAddress={connectedWallet} />
 ```
 
 ### Strike Bonuses
-- **Day 1-2**: 12 hour wait time
-- **Day 3+**: Wait time decreases by 1 hour per consecutive day
+- **Day 1-2**: 12 hour base wait time
+- **Every 3 consecutive strikes**: Wait time reduced by 10% (e.g., 3 strikes → 10.8h, 6 strikes → 9.6h)
+- **Maximum bonus**: 50% reduction (wait time floors at 6 hours after 15+ consecutive strikes)
 - **Miss a day**: Strikes reset to 1
 
 ## 🚀 Launchpad Studio

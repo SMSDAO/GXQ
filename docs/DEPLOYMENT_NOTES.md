@@ -25,8 +25,6 @@ The current `vercel.json` deploys only the Next.js frontend:
 
 #### 2. Environment Variables
 
-#### 2. Environment Variables
-
 Environment variables should be set in the **Vercel dashboard** (Settings → Environment Variables) or via the Vercel CLI:
 
 ```bash
