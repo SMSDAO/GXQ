@@ -31,8 +31,11 @@ yarn-error.log*
 
 # 🧪 Test snapshots and coverage
 coverage/
+# Allow test files in tests/ directory
 *.test.js
+!tests/**/*.test.js
 *.spec.js
+!tests/**/*.spec.js
 
 # 🛠 Custom editor configs
 .vscode/
