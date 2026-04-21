@@ -1,29 +1,30 @@
 {
-  "name": "tradeos-app",
-  "version": "1.1.0",
-  "description": "TradeOS V1.1 - Quantum-grade cross-chain trading platform",
-  "scripts": {
-    "dev": "next dev",
-    "start": "next start",
-    "build": "next build",
-    "export": "next export -o docs",
-    "deploy": "npm run build && npm run export",
-    "deploy:all": "node scripts/deployAll.js",
-    "deploy:solana": "npx ts-node scripts/deployAll.solana.ts",
-    "widgets": "npx ts-node create-widget-relay.ts --walletConnect --init-swap --bridge --fxGlow --sovereignBadge",
-    "aura": "npx ts-node scripts/auraMap.ts",
-    "headers": "node add-code-blocks.js",
-    "setup": "chmod +x install-deploy.sh && ./install-deploy.sh"
-  },
-  "dependencies": {
-    "next": "^16.1.5",
-    "react": "^19.1.0",
-    "react-dom": "^19.2.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.19.19",
-    "@types/react": "19.1.8",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  }
+    "name":  "tradeos-app",
+    "version":  "1.1.0",
+    "description":  "TradeOS V1.1 - Quantum-grade cross-chain trading platform",
+    "scripts":  {
+                    "dev":  "next dev",
+                    "start":  "next start",
+                    "build":  "next build",
+                    "export":  "next export -o docs",
+                    "deploy":  "npm run build \u0026\u0026 npm run export",
+                    "deploy:all":  "node scripts/deployAll.js",
+                    "deploy:solana":  "npx ts-node scripts/deployAll.solana.ts",
+                    "widgets":  "npx ts-node create-widget-relay.ts --walletConnect --init-swap --bridge --fxGlow --sovereignBadge",
+                    "aura":  "npx ts-node scripts/auraMap.ts",
+                    "headers":  "node add-code-blocks.js",
+                    "setup":  "chmod +x install-deploy.sh \u0026\u0026 ./install-deploy.sh"
+                },
+    "dependencies":  {
+                         "next":  "^16.1.5",
+                         "react":  "^19.2.3",
+                         "react-dom":  "^19.2.3"
+                     },
+    "devDependencies":  {
+                            "@types/node":  "^20.19.39",
+                            "@types/react":  "19.1.8",
+                            "ts-node":  "^10.9.2",
+                            "typescript":  "^5.9.3"
+                        },
+    "type":  "module"
 }
